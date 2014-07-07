@@ -9,6 +9,8 @@
  * 2 vibration motors on digital pins 3 and 10 (PWM pins)
  * 1 mini jack - soundOut connected to digital pin 12 via a low-pass filter with a 47uF 
  * and a zipper slider < 100 K Ohms (the zipper uses the uC internal pullup resistor
+ *
+ * Partially based on http://makezine.com/2009/05/15/making-the-arduino-emf-detector/
  */
 
 #define soundOut 12 // sound output connected to digital pin 12
@@ -46,8 +48,8 @@ void setup() {
 }
 
 void loop() {
-  coilProbeRight();
-  coilProbeLeft();
+  coilProbeRight(); // call the function for the right coil
+  coilProbeLeft(); // call the function for the left coil
 
 //  Serial.print(averageRight);
 //  Serial.print(" ");
@@ -55,8 +57,8 @@ void loop() {
 //  delay(1);
 }
 
-void coilProbeRight() {
-  probeRight = analogRead(coilRight);
+void coilProbeRight() { // right coil function
+  probeRight = analogRead(coilRight); // read the incoming values from the right coil
 
   if(probeRight >= 1){ // if the reading isn't zero, proceed
 
@@ -77,13 +79,13 @@ void coilProbeRight() {
   int vibeIntensityRight = map(averageRight, 32, 768, 0, 255); // map the average to pwm values
   analogWrite(vibeRight, vibeIntensityRight); //  make the motor vibrate depending on the average
 
-//  int freq = map(averageRight, 32, 768, 880, 60);
-//  int dur = map(freq, 880, 60, 10, 500);
-//  tone(soundOut, freq, dur);
+  int freq = map(averageRight, 32, 768, 880, 60); // map the average to the desired frequency range
+  int dur = map(freq, 880, 60, 10, 500); // map the frequency range to the desired tone duration
+  tone(soundOut, freq, dur); // create a squarewave tone that varies in frequency and duration
 }
 
-void coilProbeLeft() {
-  probeLeft = analogRead(coilLeft); 
+void coilProbeLeft() { // left coil function
+  probeLeft = analogRead(coilLeft); // read the incoming values from the left coil
 
   if(probeLeft >= 1){ // if the reading isn't zero, proceed
 
@@ -104,9 +106,9 @@ void coilProbeLeft() {
   int vibeIntensityLeft = map(averageLeft, 0, 1023, 0, 255); // map the average to pwm values
   analogWrite(vibeLeft, vibeIntensityLeft); // make the motor vibrate depending on the average
 
-//  int freq = map(averageLeft, 0, 1023, 60, 880);
-//  int dur = map(freq, 60, 880, 10, 500);
-//  tone(soundOut, freq, dur);
+  int freq = map(averageLeft, 0, 1023, 60, 880); // map the average to the desired frequency range
+  int dur = map(freq, 60, 880, 10, 500); // map the frequency range to the desired tone duration
+  tone(soundOut, freq, dur); // create a squarewave tone that varies in frequency and duration
 }
 
 
