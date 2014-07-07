@@ -15,7 +15,7 @@
 
 #define soundOut 12 // sound output connected to digital pin 12
 #define vibeRight 3 // vibration motor located on the right chest connected to digital pin 3
-#define vibeLeft 10 // vibration motor located on the right chest connected to digital pin 3
+#define vibeLeft 10 // vibration motor located on the left chest connected to digital pin 10
 #define coilRight A7 // coil antenna located on the right wrist connected to analog pin A7
 #define coilLeft A9 // coil antenna located on the left wrist connected to analog pin A9
 
