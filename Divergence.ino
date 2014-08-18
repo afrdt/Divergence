@@ -6,24 +6,21 @@
  * Circuit:
  * Adafruit Flora
  * 2 handmade copper coils connected on analog pins A7 and A9 and grounded with 3.6 M Ohms resistors 
- * 2 vibration motors on digital pins 3 and 10 (PWM pins)
+ * 1 vibration motor on digital pin 10 (PWM pin)
  * 1 mini jack - soundOut connected to digital pin 12 via a low-pass filter with a 47uF 
  * and a zipper slider < 100 K Ohms (the zipper uses the uC internal pullup resistor
- *
- * Partially based on http://makezine.com/2009/05/15/making-the-arduino-emf-detector/
  */
 
 #define soundOut 12 // sound output connected to digital pin 12
-#define vibeRight 3 // vibration motor located on the right chest connected to digital pin 3
-#define vibeLeft 10 // vibration motor located on the left chest connected to digital pin 10
+#define vibe 10 // vibration motor located on the chest connected to digital pin 3
 #define coilRight A7 // coil antenna located on the right wrist connected to analog pin A7
 #define coilLeft A9 // coil antenna located on the left wrist connected to analog pin A9
 
 #define NUMREADINGSRIGHT 15 // raise this number to increase data smoothing
 #define NUMREADINGSLEFT 15 // raise this number to increase data smoothing
 
-int senseLimitRight = 512; // raise this number to decrease sensitivity on the right probe(up to 1023 max)
-int senseLimitLeft = 512; // raise this number to decrease sensitivity on the left probe(up to 1023 max)
+int senseLimitRight = 125; // raise this number to decrease sensitivity on the right probe(up to 1023 max)
+int senseLimitLeft = 125; // raise this number to decrease sensitivity on the left probe(up to 1023 max)
 
 int probeRight; // probe readings from the right coil
 int probeLeft; // probe readings from the left coil
@@ -43,22 +40,21 @@ void setup() {
   //Serial.begin(9600); // initialize the serial communication (for debugging-calibrating only)
   pinMode(soundOut, OUTPUT); // initialize the mini jack/speaker as an output
   pinMode(A11, INPUT_PULLUP); // use the internal pullup resistor on the same pin as above
-  pinMode(vibeRight, OUTPUT); // initialize the mini jack/speaker as an output
-  pinMode(vibeLeft, OUTPUT); // initialize the mini jack/speaker as an output
+  pinMode(vibe, OUTPUT); // initialize the mini jack/speaker as an output
 }
 
 void loop() {
-  coilProbeRight(); // call the function for the right coil
-  coilProbeLeft(); // call the function for the left coil
+  coilProbeRight();
+  coilProbeLeft();
 
 //  Serial.print(averageRight);
 //  Serial.print(" ");
 //  Serial.println(averageLeft);
-//  delay(1);
+  delay(1);
 }
 
-void coilProbeRight() { // right coil function
-  probeRight = analogRead(coilRight); // read the incoming values from the right coil
+void coilProbeRight() {
+  probeRight = analogRead(coilRight);
 
   if(probeRight >= 1){ // if the reading isn't zero, proceed
 
@@ -76,16 +72,16 @@ void coilProbeRight() { // right coil function
     averageRight = totalRight / NUMREADINGSRIGHT; // calculate the average
   }
   
-  int vibeIntensityRight = map(averageRight, 32, 768, 0, 255); // map the average to pwm values
-  analogWrite(vibeRight, vibeIntensityRight); //  make the motor vibrate depending on the average
+  int vibeIntensity = map(averageRight, 32, 768, 0, 255); // map the average to pwm values
+  analogWrite(vibe, vibeIntensity); //  make the motor vibrate depending on the average
 
-  int freq = map(averageRight, 32, 768, 880, 60); // map the average to the desired frequency range
-  int dur = map(freq, 880, 60, 10, 500); // map the frequency range to the desired tone duration
-  tone(soundOut, freq, dur); // create a squarewave tone that varies in frequency and duration
+  int freq = map(averageRight, 32, 768, 880, 60);
+  int dur = map(freq, 880, 60, 10, 1000);
+  tone(soundOut, freq, dur);
 }
 
-void coilProbeLeft() { // left coil function
-  probeLeft = analogRead(coilLeft); // read the incoming values from the left coil
+void coilProbeLeft() {
+  probeLeft = analogRead(coilLeft); 
 
   if(probeLeft >= 1){ // if the reading isn't zero, proceed
 
@@ -103,12 +99,12 @@ void coilProbeLeft() { // left coil function
     averageLeft = totalLeft / NUMREADINGSLEFT; // calculate the average
   }
 
-  int vibeIntensityLeft = map(averageLeft, 0, 1023, 0, 255); // map the average to pwm values
-  analogWrite(vibeLeft, vibeIntensityLeft); // make the motor vibrate depending on the average
+  int vibeIntensity = map(averageLeft, 0, 1023, 0, 255); // map the average to pwm values
+  analogWrite(vibe, vibeIntensity); // make the motor vibrate depending on the average
 
-  int freq = map(averageLeft, 0, 1023, 60, 880); // map the average to the desired frequency range
-  int dur = map(freq, 60, 880, 10, 500); // map the frequency range to the desired tone duration
-  tone(soundOut, freq, dur); // create a squarewave tone that varies in frequency and duration
+  int freq = map(averageLeft, 0, 1023, 880, 60);
+  int dur = map(freq, 880, 60, 10, 1000);
+  tone(soundOut, freq, dur);
 }
 
 
